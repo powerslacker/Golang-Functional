@@ -1,24 +1,11 @@
-package main
-
-import (
-	"errors"
-	"reflect"
-)
-
-func any(list interface{}, pred func(interface{}) (bool, error)) (bool, error) {
-	reflection := reflect.ValueOf(list)
-
-	if reflection.Kind() != reflect.Slice {
-		return false, errors.New("any: given argument 'list' is not a slice")
+func Any(input interface{}, pred func(interface{}) (bool, error)) (bool, error) {
+	list, err := InterfaceToSlice(input)
+	
+	if err != nil {
+		return false, err
 	}
-
-	iterable := make([]interface{}, reflection.Len())
-
-	for i, _ := range iterable {
-		iterable[i] = reflection.Index(i).Interface()
-	}
-
-	for _, v := range iterable {
+	
+	for _, v := range list {
 		found, err := pred(v)
 
 		if err != nil {
